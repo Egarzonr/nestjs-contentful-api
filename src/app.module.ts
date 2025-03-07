@@ -7,6 +7,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { ContentfulTask } from './contentful/tasks/contentful.task';
 import { AuthModule } from './auth/auth.module';
 import { ContentfulModule } from './contentful/contentful.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { ContentfulModule } from './contentful/contentful.module';
     ReportsModule,
     AuthModule,
     ContentfulModule,
+    UsersModule,
   ],
 })
 export class AppModule {

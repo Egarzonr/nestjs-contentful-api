@@ -10,7 +10,7 @@ export class ReportsService {
 
   async getDeletedPercentage(): Promise<number> {
     const total = await this.productRepository.countDocuments();
-    if (!total) return 0; // Evitar división por cero
+    if (!total) return 0;
 
     const deleted = await this.productRepository.countDocuments({
       isDeleted: true,
@@ -26,7 +26,7 @@ export class ReportsService {
     const totalNonDeleted = await this.productRepository.countDocuments({
       isDeleted: false,
     });
-    if (!totalNonDeleted) return 0; // Evitar división por cero
+    if (!totalNonDeleted) return 0;
 
     const filter: Record<string, any> = { isDeleted: false };
     if (hasPrice !== undefined) filter.price = { $exists: hasPrice };
