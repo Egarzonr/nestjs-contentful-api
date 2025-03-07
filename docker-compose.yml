@@ -1,0 +1,19 @@
+services:
+  mongo:
+    image: mongo
+    ports:
+      - '27017:27017'
+    volumes:
+      - mongo-data:/data/db
+  # app:
+  #   build: .
+  #   ports:
+  #     - '3000:3000'
+  #   environment:
+  #     - NODE_ENV=docker
+  #     - MONGO_URI_DOCKER=mongodb://mongo:27017/product-api
+  #     - MONGO_URI_LOCAL=mongodb://localhost:27017/product-api
+  #   depends_on:
+  #     - mongo
+volumes:
+  mongo-data:
