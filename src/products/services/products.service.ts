@@ -1,27 +1,25 @@
-import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model, RootFilterQuery } from 'mongoose';
-import { Product } from '../schemas/product.schema';
+import { Injectable, Inject } from '@nestjs/common';
+import { IProductRepository } from '../repositories/product.repository';
 
 @Injectable()
 export class ProductsService {
-  constructor(@InjectModel('Product') private productModel: Model<Product>) {}
+  constructor(
+    @Inject('IProductRepository')
+    private readonly productRepository: IProductRepository,
+  ) {}
 
-  async findAll(
-    filter: RootFilterQuery<Product>,
-    page: number,
-    limit: number,
-  ): Promise<Product[]> {
-    return this.productModel
-      .find(filter)
-      .skip((page - 1) * limit)
-      .limit(limit)
-      .exec();
+  async findAll(filter: any, page: number, limit: number) {
+    return this.productRepository.findMany(filter, {
+      skip: (page - 1) * limit,
+      limit,
+    });
   }
 
-  async delete(id: string): Promise<Product | null> {
-    return this.productModel
-      .findByIdAndUpdate(id, { isDeleted: true }, { new: true })
-      .exec();
+  async delete(id: string) {
+    return this.productRepository.findOneAndUpdate(
+      { _id: id },
+      { isDeleted: true },
+      {},
+    );
   }
 }

@@ -1,7 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ReportsService } from './reports.service';
 import { IProductRepository } from '../../products/repositories/product.repository';
-// import { BadRequestException } from '@nestjs/common';
 import { Product } from 'src/products/schemas/product.schema';
 
 describe('ReportsService', () => {
@@ -9,11 +8,10 @@ describe('ReportsService', () => {
   let productRepository: jest.Mocked<IProductRepository>;
 
   beforeEach(async () => {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     productRepository = {
       countDocuments: jest.fn(),
       findMany: jest.fn(),
-    } as any;
+    } as unknown as jest.Mocked<IProductRepository>;
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -25,45 +23,72 @@ describe('ReportsService', () => {
     reportsService = module.get<ReportsService>(ReportsService);
   });
 
-  describe('getDeletedPercentage', () => {
-    it('should return 0 if there are no products', async () => {
-      productRepository.countDocuments.mockResolvedValue(0);
-      expect(await reportsService.getDeletedPercentage()).toBe(0);
+  describe('getProductReport', () => {
+    it('should return 0 if total products is 0', async () => {
+      productRepository.countDocuments.mockResolvedValueOnce(0);
+      const result = await reportsService.getProductReport({ isDeleted: true });
+      expect(result).toBe(0);
     });
 
+    it('should return correct percentage', async () => {
+      productRepository.countDocuments
+        .mockResolvedValueOnce(100) // total count
+        .mockResolvedValueOnce(20); // matching filter count
+
+      const result = await reportsService.getProductReport({ isDeleted: true });
+      expect(result).toBe(20);
+    });
+  });
+
+  describe('getDeletedPercentage', () => {
     it('should return the percentage of deleted products', async () => {
-      productRepository.countDocuments.mockResolvedValueOnce(100);
-      productRepository.countDocuments.mockResolvedValueOnce(20);
-      expect(await reportsService.getDeletedPercentage()).toBe(20);
+      productRepository.countDocuments
+        .mockResolvedValueOnce(50) // total count
+        .mockResolvedValueOnce(10); // deleted count
+
+      const result = await reportsService.getDeletedPercentage();
+      expect(result).toBe(20);
     });
   });
 
   describe('getNonDeletedPercentage', () => {
-    it('should return 0 if no non-deleted products exist', async () => {
-      productRepository.countDocuments.mockResolvedValue(0);
-      expect(await reportsService.getNonDeletedPercentage()).toBe(0);
+    it('should return the percentage of non-deleted products', async () => {
+      productRepository.countDocuments
+        .mockResolvedValueOnce(100) // total count
+        .mockResolvedValueOnce(80); // non-deleted count
+
+      const result = await reportsService.getNonDeletedPercentage();
+      expect(result).toBe(80);
     });
 
-    it('should return the percentage of non-deleted products with filters', async () => {
-      productRepository.countDocuments.mockResolvedValueOnce(80);
-      productRepository.countDocuments.mockResolvedValueOnce(40);
-      expect(await reportsService.getNonDeletedPercentage(true)).toBe(50);
+    it('should apply hasPrice filter', async () => {
+      productRepository.countDocuments
+        .mockResolvedValueOnce(100) // total count
+        .mockResolvedValueOnce(40); // count with price
+
+      const result = await reportsService.getNonDeletedPercentage(true);
+      expect(result).toBe(40);
     });
 
-    // it('should throw BadRequestException if only one date is provided', async () => {
-    //   await expect(
-    //     reportsService.getNonDeletedPercentage(
-    //       undefined,
-    //       new Date(),
-    //       undefined,
-    //     ),
-    //   ).rejects.toThrow(BadRequestException);
-    // });
+    it('should apply date range filter', async () => {
+      productRepository.countDocuments
+        .mockResolvedValueOnce(100) // total count
+        .mockResolvedValueOnce(30); // count in date range
+
+      const startDate = new Date('2024-01-01');
+      const endDate = new Date('2024-02-01');
+      const result = await reportsService.getNonDeletedPercentage(
+        undefined,
+        startDate,
+        endDate,
+      );
+      expect(result).toBe(30);
+    });
   });
 
   describe('getTopExpensiveProducts', () => {
-    it('should return the top 5 most expensive products', async () => {
-      const mockProducts = [
+    it('should return top 5 most expensive products', async () => {
+      const mockProducts: Product[] = [
         {
           name: 'Product 1',
           price: 100,
@@ -71,7 +96,8 @@ describe('ReportsService', () => {
           isDeleted: false,
           createdAt: new Date(),
           _id: '1',
-        },
+          // Add other required properties for Product type
+        } as Product,
         {
           name: 'Product 2',
           price: 90,
@@ -79,13 +105,18 @@ describe('ReportsService', () => {
           isDeleted: false,
           createdAt: new Date(),
           _id: '2',
-        },
+          // Add other required properties for Product type
+        } as Product,
       ];
-      productRepository.findMany.mockResolvedValue(
-        mockProducts as unknown as Product[],
-      );
-      expect(await reportsService.getTopExpensiveProducts()).toEqual(
-        mockProducts,
+
+      productRepository.findMany.mockResolvedValueOnce(mockProducts);
+
+      const result = await reportsService.getTopExpensiveProducts();
+      expect(result).toEqual(mockProducts);
+      // eslint-disable-next-line @typescript-eslint/unbound-method
+      expect(productRepository.findMany).toHaveBeenCalledWith(
+        {},
+        { sort: { price: -1 }, limit: 5 },
       );
     });
   });
