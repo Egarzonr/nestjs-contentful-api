@@ -15,4 +15,9 @@ export interface IProductRepository {
     update: any,
     options: any,
   ): Promise<Product | null>;
+
+  findMany(
+    filter?: any,
+    options?: { sort?: any; limit?: number; skip?: number },
+  ): Promise<Product[]>;
 }

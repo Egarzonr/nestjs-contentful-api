@@ -1,14 +1,5 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Param,
-  Delete,
-  Query,
-} from '@nestjs/common';
+import { Controller, Get, Param, Delete, Query } from '@nestjs/common';
 import { ProductsService } from '../services/products.service';
-import { CreateProductDto } from '../dto/create-products.dto';
 
 @Controller('products')
 export class ProductsController {
@@ -20,11 +11,6 @@ export class ProductsController {
     @Query('limit') limit: number = 5,
   ) {
     return this.productsService.findAll({ isDeleted: false }, page, limit);
-  }
-
-  @Post()
-  async create(@Body() createProductDto: CreateProductDto): Promise<any> {
-    return this.productsService.create(createProductDto);
   }
 
   @Delete(':id')

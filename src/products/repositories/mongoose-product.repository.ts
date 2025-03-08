@@ -24,4 +24,16 @@ export class MongooseProductRepository implements IProductRepository {
       .lean()
       .exec();
   }
+
+  async findMany(
+    filter: any = {},
+    options: { sort?: any; limit?: number; skip?: number } = {},
+  ): Promise<Product[]> {
+    return this.productModel
+      .find(filter)
+      .sort(options.sort)
+      .limit(options.limit ?? 0)
+      .skip(options.skip ?? 0)
+      .exec();
+  }
 }
