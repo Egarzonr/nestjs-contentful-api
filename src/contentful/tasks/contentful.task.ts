@@ -2,7 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { createClient } from 'contentful';
 import { ConfigService } from '@nestjs/config';
-import { IProductRepository } from '../../products/repositories/product.repository';
+import { IProductRepository } from '../../product/repositories/product.repository';
 
 @Injectable()
 export class ContentfulTask {

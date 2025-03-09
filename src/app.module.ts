@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { ProductsModule } from './products/products.module';
-import { ReportsModule } from './reports/reports.module';
+import { ProductsModule } from './product/product.module';
+import { ReportsModule } from './report/report.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ContentfulTask } from './contentful/tasks/contentful.task';
 import { AuthModule } from './auth/auth.module';
 import { ContentfulModule } from './contentful/contentful.module';
-import { UsersModule } from './users/users.module';
+import { UsersModule } from './user/user.module';
 
 @Module({
   imports: [

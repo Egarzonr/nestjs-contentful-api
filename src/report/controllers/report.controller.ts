@@ -5,7 +5,7 @@ import {
   UseGuards,
   BadRequestException,
 } from '@nestjs/common';
-import { ReportsService } from '../services/reports.service';
+import { ReportsService } from '../services/report.service';
 import { AuthGuard } from '@nestjs/passport';
 
 @Controller('reports')
