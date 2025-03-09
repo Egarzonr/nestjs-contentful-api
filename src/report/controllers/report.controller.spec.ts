@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ReportsController } from './reports.controller';
-import { ReportsService } from '../services/reports.service';
+import { ReportsController } from './report.controller';
+import { ReportsService } from '../services/report.service';
 import { AuthGuard } from '@nestjs/passport';
 
 describe('ReportsController', () => {

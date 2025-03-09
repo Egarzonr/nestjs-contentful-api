@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ReportsService } from './reports.service';
-import { IProductRepository } from '../../products/repositories/product.repository';
-import { Product } from 'src/products/schemas/product.schema';
+import { ReportsService } from './report.service';
+import { IProductRepository } from '../../product/repositories/product.repository';
+import { Product } from '../../product/schemas/product.schema';
 
 describe('ReportsService', () => {
   let reportsService: ReportsService;
