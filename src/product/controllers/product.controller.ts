@@ -1,15 +1,14 @@
 import { Controller, Get, Param, Delete, Query } from '@nestjs/common';
-import { ProductsService } from '../services/product.service';
+import { ProductService } from '../services/product.service';
+import { PaginationDto } from '../dto/pagination.dto';
 
 @Controller('products')
-export class ProductsController {
-  constructor(private readonly productsService: ProductsService) {}
+export class ProductController {
+  constructor(private readonly productsService: ProductService) {}
 
   @Get()
-  async findAll(
-    @Query('page') page: number = 1,
-    @Query('limit') limit: number = 5,
-  ) {
+  async findAll(@Query() paginationDto: PaginationDto) {
+    const { page = 1, limit = 5 } = paginationDto;
     return this.productsService.findAll({ isDeleted: false }, page, limit);
   }
 

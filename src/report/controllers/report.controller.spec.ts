@@ -5,8 +5,6 @@ import { AuthGuard } from '@nestjs/passport';
 
 describe('ReportsController', () => {
   let reportsController: ReportsController;
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  let reportsService: ReportsService;
 
   const mockReportsService = {
     getDeletedPercentage: jest.fn(),
@@ -29,7 +27,6 @@ describe('ReportsController', () => {
       .compile();
 
     reportsController = module.get<ReportsController>(ReportsController);
-    reportsService = module.get<ReportsService>(ReportsService);
   });
 
   it('should be defined', () => {

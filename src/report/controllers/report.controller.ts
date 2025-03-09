@@ -9,7 +9,7 @@ import { ReportsService } from '../services/report.service';
 import { AuthGuard } from '@nestjs/passport';
 
 @Controller('reports')
-@UseGuards(AuthGuard('jwt')) // Protegido con JWT
+@UseGuards(AuthGuard('jwt'))
 export class ReportsController {
   constructor(private readonly reportsService: ReportsService) {}
 
@@ -20,7 +20,7 @@ export class ReportsController {
 
   @Get('non-deleted-percentage')
   async getNonDeletedPercentage(
-    @Query('hasPrice') hasPrice: string, // Llega como string (true/false)
+    @Query('hasPrice') hasPrice: string,
     @Query('startDate') startDate?: string,
     @Query('endDate') endDate?: string,
   ) {
@@ -43,7 +43,6 @@ export class ReportsController {
     );
   }
 
-  // 3️⃣ Top 5 productos más caros
   @Get('top-expensive-products')
   async getTopExpensiveProducts() {
     return this.reportsService.getTopExpensiveProducts();

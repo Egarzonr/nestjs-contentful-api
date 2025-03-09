@@ -1,10 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ProductsService } from './product.service';
+import { ProductService } from './product.service';
 import { IProductRepository } from '../repositories/product.repository';
 import { Product } from '../schemas/product.schema';
 
 describe('ProductsService', () => {
-  let productsService: ProductsService;
+  let productService: ProductService;
   let productRepository: jest.Mocked<IProductRepository>;
 
   beforeEach(async () => {
@@ -15,12 +15,12 @@ describe('ProductsService', () => {
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        ProductsService,
+        ProductService,
         { provide: 'IProductRepository', useValue: productRepository },
       ],
     }).compile();
 
-    productsService = module.get<ProductsService>(ProductsService);
+    productService = module.get<ProductService>(ProductService);
   });
 
   describe('findAll', () => {
@@ -33,12 +33,12 @@ describe('ProductsService', () => {
         mockProducts as Product[],
       );
 
-      const result = await productsService.findAll({}, 1, 5);
+      const result = await productService.findAll({}, 1, 10);
       expect(result).toEqual(mockProducts);
       // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(productRepository.findMany).toHaveBeenCalledWith(
         {},
-        { skip: 0, limit: 5 },
+        { skip: 0, limit: 10 },
       );
     });
   });
@@ -50,7 +50,7 @@ describe('ProductsService', () => {
         mockProduct as Product,
       );
 
-      const result = await productsService.delete('123');
+      const result = await productService.delete('123');
       expect(result).toEqual(mockProduct);
       // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(productRepository.findOneAndUpdate).toHaveBeenCalledWith(

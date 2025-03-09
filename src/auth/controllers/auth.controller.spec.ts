@@ -36,14 +36,14 @@ describe('AuthController', () => {
 
   describe('login', () => {
     it('should return a token if credentials are valid', async () => {
-      const mockUser = { id: '1', username: 'testuser' } as User;
+      const mockUser = { id: '1', username: 'test-user' } as User;
       const mockToken = { access_token: 'jwt-token' };
 
       jest.spyOn(userService, 'validateUser').mockResolvedValue(mockUser);
       jest.spyOn(authService, 'login').mockResolvedValue(mockToken);
 
       const result = await authController.login({
-        username: 'testuser',
+        username: 'test-user',
         password: 'password',
       });
       expect(result).toEqual(mockToken);
@@ -54,8 +54,8 @@ describe('AuthController', () => {
 
       await expect(
         authController.login({
-          username: 'testuser',
-          password: 'wrongpassword',
+          username: 'test-user',
+          password: 'wrong-password',
         }),
       ).rejects.toThrow(UnauthorizedException);
     });

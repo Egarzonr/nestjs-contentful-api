@@ -1,46 +1,42 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ProductsController } from './product.controller';
-import { ProductsService } from '../services/product.service';
-import { Product } from '../schemas/product.schema';
+import { ProductController } from './product.controller';
+import { ProductService } from '../services/product.service';
+import { PaginationDto } from '../dto/pagination.dto';
 
 describe('ProductsController', () => {
-  let productsController: ProductsController;
-  let productsService: ProductsService;
+  let controller: ProductController;
+
+  const mockProductsService = {
+    findAll: jest.fn(),
+    delete: jest.fn(),
+  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      controllers: [ProductsController],
-      providers: [
-        {
-          provide: ProductsService,
-          useValue: {
-            findAll: jest.fn(),
-            create: jest.fn(),
-            delete: jest.fn(),
-          },
-        },
-      ],
+      controllers: [ProductController],
+      providers: [{ provide: ProductService, useValue: mockProductsService }],
     }).compile();
 
-    productsController = module.get<ProductsController>(ProductsController);
-    productsService = module.get<ProductsService>(ProductsService);
+    controller = module.get<ProductController>(ProductController);
   });
 
-  it('should be defined', () => {
-    expect(productsController).toBeDefined();
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
   describe('findAll', () => {
-    it('should return a paginated list of products', async () => {
-      const mockProducts = [{ id: '1', name: 'Product 1' }];
-      jest
-        .spyOn(productsService, 'findAll')
-        .mockResolvedValue(mockProducts as Product[]);
+    it('should get paginated products', async () => {
+      const mockProducts = [
+        { id: '1', name: 'Product 1' },
+        { id: '2', name: 'Product 2' },
+      ];
+      mockProductsService.findAll.mockResolvedValue(mockProducts);
 
-      const result = await productsController.findAll(1, 5);
+      const paginationDto: PaginationDto = { page: 1, limit: 5 };
+      const result = await controller.findAll(paginationDto);
+
       expect(result).toEqual(mockProducts);
-      // eslint-disable-next-line @typescript-eslint/unbound-method
-      expect(productsService.findAll).toHaveBeenCalledWith(
+      expect(mockProductsService.findAll).toHaveBeenCalledWith(
         { isDeleted: false },
         1,
         5,
@@ -49,19 +45,15 @@ describe('ProductsController', () => {
   });
 
   describe('delete', () => {
-    it('should delete a product and return the result', async () => {
-      const mockResponse = {
-        id: '1',
-        name: 'Deleted Product',
-        isDeleted: true,
-      } as Product;
-      jest.spyOn(productsService, 'delete').mockResolvedValue(mockResponse);
+    it('should delete a product by ID', async () => {
+      const mockResponse = { success: true };
+      mockProductsService.delete.mockResolvedValue(mockResponse);
 
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const result = await productsController.delete('1');
+      const result = await controller.delete('123');
+
       expect(result).toEqual(mockResponse);
-      // eslint-disable-next-line @typescript-eslint/unbound-method
-      expect(productsService.delete).toHaveBeenCalledWith('1');
+      expect(mockProductsService.delete).toHaveBeenCalledWith('123');
     });
   });
 });
