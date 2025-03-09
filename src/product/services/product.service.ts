@@ -10,11 +10,11 @@ export class ProductService {
 
   async findAll(
     filter: Partial<Record<string, unknown>>,
-    page: number,
-    limit: number,
+    page?: number,
+    limit?: number,
   ) {
-    const safePage = Math.max(page, 1);
-    const safeLimit = Math.max(limit, 10);
+    const safePage = page ?? 1;
+    const safeLimit = limit ?? 5;
 
     return this.productRepository.findMany(filter, {
       skip: (safePage - 1) * safeLimit,

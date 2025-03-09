@@ -10,7 +10,7 @@ export class ContentfulTask {
 
   constructor(
     @Inject('IProductRepository')
-    private readonly productRepository: IProductRepository, // Inyecta el repositorio
+    private readonly productRepository: IProductRepository,
     private configService: ConfigService,
   ) {
     this.client = createClient({

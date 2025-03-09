@@ -1,6 +1,7 @@
 import { Controller, Get, Param, Delete, Query } from '@nestjs/common';
 import { ProductService } from '../services/product.service';
 import { PaginationDto } from '../dto/pagination.dto';
+import { ValidateObjectIdPipe } from '../pipes/validate-objectid.pipe';
 
 @Controller('products')
 export class ProductController {
@@ -8,12 +9,15 @@ export class ProductController {
 
   @Get()
   async findAll(@Query() paginationDto: PaginationDto) {
-    const { page = 1, limit = 5 } = paginationDto;
-    return this.productsService.findAll({ isDeleted: false }, page, limit);
+    return this.productsService.findAll(
+      { isDeleted: false },
+      paginationDto.page ?? 1,
+      paginationDto.limit ?? 5,
+    );
   }
 
   @Delete(':id')
-  async delete(@Param('id') id: string): Promise<any> {
+  async delete(@Param('id', ValidateObjectIdPipe) id: string): Promise<any> {
     return this.productsService.delete(id);
   }
 }

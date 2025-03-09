@@ -33,12 +33,12 @@ describe('ProductsService', () => {
         mockProducts as Product[],
       );
 
-      const result = await productService.findAll({}, 1, 10);
+      const result = await productService.findAll({}, 1, 5);
       expect(result).toEqual(mockProducts);
       // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(productRepository.findMany).toHaveBeenCalledWith(
         {},
-        { skip: 0, limit: 10 },
+        { skip: 0, limit: 5 },
       );
     });
   });

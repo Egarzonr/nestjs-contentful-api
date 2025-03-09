@@ -33,7 +33,7 @@ describe('AuthService', () => {
 
   describe('login', () => {
     it('should return an access token for a valid user', async () => {
-      const mockUser: User = { _id: '123', username: 'testuser' } as User;
+      const mockUser: User = { _id: '123', username: 'test-user' } as User;
       const mockToken = 'jwt-token';
 
       jest.spyOn(jwtService, 'signAsync').mockResolvedValue(mockToken);
@@ -42,7 +42,7 @@ describe('AuthService', () => {
       expect(result).toEqual({ access_token: mockToken });
       // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(jwtService.signAsync).toHaveBeenCalledWith({
-        username: 'testuser',
+        username: 'test-user',
         sub: '123',
       });
     });
