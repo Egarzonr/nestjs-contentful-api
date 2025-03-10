@@ -13,16 +13,13 @@ import { UsersModule } from './user/user.module';
   imports: [
     ScheduleModule.forRoot(),
     ConfigModule.forRoot({
-      isGlobal: true, // Configura ConfigModule como global
+      isGlobal: true,
     }),
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
-        uri:
-          process.env.NODE_ENV === 'docker'
-            ? configService.get<string>('MONGO_URI_DOCKER') // URI Docker
-            : configService.get<string>('MONGO_URI_LOCAL'), // URI local
+        uri:configService.get<string>('MONGO_URI') 
       }),
     }),
     ProductsModule,
