@@ -31,7 +31,7 @@ export class MongooseProductRepository implements IProductRepository {
   ): Promise<Product[]> {
     return this.productModel
       .find(filter)
-      .sort(options.sort)
+      .sort(options.sort ?? { name: 1 })
       .limit(options.limit ?? 0)
       .skip(options.skip ?? 0)
       .exec();
