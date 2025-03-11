@@ -1,10 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UsersController } from './user.controller';
 import { UsersService } from '../services/user.service';
+import { RegisterUserDto } from '../dto/register-user.dto';
+import { User } from '../schemas/user.schema';
 
 describe('UsersController', () => {
   let usersController: UsersController;
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   let usersService: UsersService;
 
   const mockUsersService = {
@@ -31,20 +32,23 @@ describe('UsersController', () => {
   });
 
   describe('register', () => {
-    it('should create a user and return the result', async () => {
-      const mockUser = { id: '1', username: 'testuser' };
-      mockUsersService.createUser.mockResolvedValue(mockUser);
-
-      const result = await usersController.register({
+    it('should call usersService.createUser with the provided data', async () => {
+      const registerUserDto: RegisterUserDto = {
         username: 'testuser',
         password: 'password123',
-      });
+      };
+      const createdUser: User = {
+        username: 'testuser',
+        password: 'hashedPassword',
+      } as User;
 
-      expect(result).toEqual(mockUser);
-      expect(mockUsersService.createUser).toHaveBeenCalledWith(
-        'testuser',
-        'password123',
-      );
+      mockUsersService.createUser.mockResolvedValue(createdUser);
+
+      const result = await usersController.register(registerUserDto);
+
+      // eslint-disable-next-line @typescript-eslint/unbound-method
+      expect(usersService.createUser).toHaveBeenCalledWith(registerUserDto);
+      expect(result).toEqual(createdUser);
     });
   });
 });

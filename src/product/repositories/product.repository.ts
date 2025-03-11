@@ -1,23 +1,15 @@
-import { Document } from 'mongoose';
-
-export interface Product extends Document {
-  name: string;
-  category: string;
-  price?: number;
-  isDeleted: boolean;
-  createdAt: Date;
-}
+import { FilterQuery, UpdateQuery, QueryOptions } from 'mongoose';
+import { Product } from '../schemas/product.schema';
 
 export interface IProductRepository {
-  countDocuments(filter?: any): Promise<number>;
+  countDocuments(filter?: FilterQuery<Product>): Promise<number>;
   findOneAndUpdate(
-    filter: any,
-    update: any,
-    options: any,
+    filter: FilterQuery<Product>,
+    update: UpdateQuery<Product>,
+    options?: QueryOptions,
   ): Promise<Product | null>;
-
   findMany(
-    filter?: any,
+    filter?: FilterQuery<Product>,
     options?: { sort?: any; limit?: number; skip?: number },
   ): Promise<Product[]>;
 }

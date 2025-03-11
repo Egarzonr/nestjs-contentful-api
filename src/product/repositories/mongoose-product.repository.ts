@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { FilterQuery, Model, QueryOptions, UpdateQuery } from 'mongoose';
 import { IProductRepository } from './product.repository';
 import { Product } from '../schemas/product.schema';
 
@@ -10,14 +10,14 @@ export class MongooseProductRepository implements IProductRepository {
     @InjectModel(Product.name) private productModel: Model<Product>,
   ) {}
 
-  async countDocuments(filter: any = {}): Promise<number> {
+  async countDocuments(filter: FilterQuery<Product> = {}): Promise<number> {
     return this.productModel.countDocuments(filter).exec();
   }
 
   async findOneAndUpdate(
-    filter: any,
-    update: any,
-    options: any,
+    filter: FilterQuery<Product>,
+    update: UpdateQuery<Product>,
+    options: QueryOptions = {},
   ): Promise<Product | null> {
     return this.productModel
       .findOneAndUpdate(filter, update, { ...options, new: true })
@@ -26,7 +26,7 @@ export class MongooseProductRepository implements IProductRepository {
   }
 
   async findMany(
-    filter: any = {},
+    filter: FilterQuery<Product> = {},
     options: { sort?: any; limit?: number; skip?: number } = {},
   ): Promise<Product[]> {
     return this.productModel

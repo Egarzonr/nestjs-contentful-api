@@ -3,7 +3,7 @@ import {
   Get,
   Query,
   UseGuards,
-  BadRequestException,
+  ParseBoolPipe,
 } from '@nestjs/common';
 import { ReportsService } from '../services/report.service';
 import { AuthGuard } from '@nestjs/passport';
@@ -20,26 +20,14 @@ export class ReportsController {
 
   @Get('non-deleted-percentage')
   async getNonDeletedPercentage(
-    @Query('hasPrice') hasPrice: string,
+    @Query('hasPrice', ParseBoolPipe) hasPrice: boolean,
     @Query('startDate') startDate?: string,
     @Query('endDate') endDate?: string,
   ) {
-    const hasPriceBool = hasPrice === 'true';
-
-    let start: Date | undefined;
-    let end: Date | undefined;
-    if (startDate && endDate) {
-      start = new Date(startDate);
-      end = new Date(endDate);
-      if (isNaN(start.getTime()) || isNaN(end.getTime())) {
-        throw new BadRequestException('Invalid date format. Use YYYY-MM-DD.');
-      }
-    }
-
     return this.reportsService.getNonDeletedPercentage(
-      hasPriceBool,
-      start,
-      end,
+      hasPrice,
+      startDate,
+      endDate,
     );
   }
 

@@ -15,7 +15,6 @@ export class User extends Document {
 
 export const UserSchema = SchemaFactory.createForClass(User);
 
-// Middleware para hashear la contraseña antes de guardar
 UserSchema.pre<User>('save', async function (next) {
   if (!this.isModified('password')) return next();
   const salt = await bcrypt.genSalt(10);
@@ -23,7 +22,6 @@ UserSchema.pre<User>('save', async function (next) {
   next();
 });
 
-// Método para comparar contraseñas
 UserSchema.methods.comparePassword = async function (
   this: User,
   plainText: string,

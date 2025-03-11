@@ -17,7 +17,7 @@ export class ProductController {
   }
 
   @Delete(':id')
-  async delete(@Param('id', ValidateObjectIdPipe) id: string): Promise<any> {
+  async delete(@Param('id', ValidateObjectIdPipe) id: string) {
     return this.productsService.delete(id);
   }
 }

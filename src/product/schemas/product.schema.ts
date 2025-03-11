@@ -7,16 +7,13 @@ export class Product extends Document {
   name: string;
 
   @Prop()
-  category: string;
+  category?: string;
 
   @Prop()
   price?: number;
 
   @Prop({ default: false })
   isDeleted: boolean;
-
-  @Prop({ default: Date.now })
-  createdAt: Date;
 }
 
 export const ProductSchema = SchemaFactory.createForClass(Product);

@@ -2,9 +2,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UsersService } from './user.service';
 import { UsersRepository } from '../repositories/user.repository';
 import { User } from '../schemas/user.schema';
+import { RegisterUserDto } from '../dto/register-user.dto';
 
 describe('UsersService', () => {
   let usersService: UsersService;
+  let usersRepository: UsersRepository;
 
   const mockUsersRepository = {
     create: jest.fn(),
@@ -23,6 +25,7 @@ describe('UsersService', () => {
     }).compile();
 
     usersService = module.get<UsersService>(UsersService);
+    usersRepository = module.get<UsersRepository>(UsersRepository);
   });
 
   it('should be defined', () => {
@@ -30,45 +33,104 @@ describe('UsersService', () => {
   });
 
   describe('createUser', () => {
-    it('should create and return a user', async () => {
-      const mockUser = { id: '1', username: 'testuser' } as User;
-      mockUsersRepository.create.mockResolvedValue(mockUser);
-
-      const result = await usersService.createUser('testuser', 'password123');
-
-      expect(result).toEqual(mockUser);
-      expect(mockUsersRepository.create).toHaveBeenCalledWith({
+    it('should create a user', async () => {
+      const registerUserDto: RegisterUserDto = {
         username: 'testuser',
         password: 'password123',
-      });
+      };
+      const createdUser: User = {
+        username: 'testuser',
+        password: 'hashedPassword',
+      } as User;
+
+      mockUsersRepository.create.mockResolvedValue(createdUser);
+
+      const result = await usersService.createUser(registerUserDto);
+
+      // eslint-disable-next-line @typescript-eslint/unbound-method
+      expect(usersRepository.create).toHaveBeenCalledWith(registerUserDto);
+      expect(result).toEqual(createdUser);
+    });
+
+    it('should throw an error if user creation fails', async () => {
+      const registerUserDto: RegisterUserDto = {
+        username: 'testuser',
+        password: 'password123',
+      };
+
+      mockUsersRepository.create.mockRejectedValue(
+        new Error('Failed to create user'),
+      );
+
+      await expect(usersService.createUser(registerUserDto)).rejects.toThrow(
+        'Failed to create user',
+      );
     });
   });
 
   describe('validateUser', () => {
-    it('should return a user if credentials are valid', async () => {
-      const mockUser = {
-        id: '1',
+    it('should return the user if credentials are valid', async () => {
+      const username = 'testuser';
+      const password = 'password123';
+      const user: User = {
         username: 'testuser',
+        password: 'hashedPassword',
         comparePassword: jest.fn().mockResolvedValue(true),
       } as unknown as User;
 
-      mockUsersRepository.findByUsername.mockResolvedValue(mockUser);
+      mockUsersRepository.findByUsername.mockResolvedValue(user);
 
-      const result = await usersService.validateUser('testuser', 'password123');
-      expect(result).toEqual(mockUser);
-      expect(mockUsersRepository.findByUsername).toHaveBeenCalledWith(
-        'testuser',
-      );
-      expect(mockUser.comparePassword).toHaveBeenCalledWith('password123');
+      const result = await usersService.validateUser(username, password);
+
+      // eslint-disable-next-line @typescript-eslint/unbound-method
+      expect(usersRepository.findByUsername).toHaveBeenCalledWith(username);
+      expect(user.comparePassword).toHaveBeenCalledWith(password);
+      expect(result).toEqual(user);
     });
 
-    it('should return null if credentials are invalid', async () => {
+    it('should return null if user is not found', async () => {
+      const username = 'testuser';
+      const password = 'password123';
+
       mockUsersRepository.findByUsername.mockResolvedValue(null);
-      const result = await usersService.validateUser(
-        'testuser',
-        'wrongpassword',
-      );
+
+      const result = await usersService.validateUser(username, password);
+
+      // eslint-disable-next-line @typescript-eslint/unbound-method
+      expect(usersRepository.findByUsername).toHaveBeenCalledWith(username);
       expect(result).toBeNull();
+    });
+
+    it('should return null if password is invalid', async () => {
+      const username = 'testuser';
+      const password = 'password123';
+      const user: User = {
+        username: 'testuser',
+        password: 'hashedPassword',
+        comparePassword: jest.fn().mockResolvedValue(false),
+      } as unknown as User;
+
+      mockUsersRepository.findByUsername.mockResolvedValue(user);
+
+      const result = await usersService.validateUser(username, password);
+
+      // eslint-disable-next-line @typescript-eslint/unbound-method
+      expect(usersRepository.findByUsername).toHaveBeenCalledWith(username);
+      expect(user.comparePassword).toHaveBeenCalledWith(password);
+      expect(result).toBeNull();
+    });
+
+    it('should throw an error if validation fails', async () => {
+      const username = 'testuser';
+      const password = 'password123';
+
+      mockUsersRepository.findByUsername.mockRejectedValue(
+        new Error('Failed to validate user'),
+      );
+
+      await expect(
+        usersService.validateUser(username, password),
+      ).rejects.toThrow('Failed to validate user');
     });
   });
 });

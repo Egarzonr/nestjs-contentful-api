@@ -12,24 +12,26 @@ export class ProductService {
   ) {}
 
   async findAll(filters: ProductFilterDto, pagination: PaginationDto) {
-    const query: Record<string, unknown> = { isDeleted: false };
-    if (filters.name) {
-      query.name = { $regex: filters.name, $options: 'i' };
+    const { name, category, minPrice, maxPrice } = filters;
+    const { page, limit } = pagination;
+    const query: Record<string, any> = { isDeleted: false };
+    if (name) {
+      query.name = { $regex: name, $options: 'i' };
     }
-    if (filters.category) {
-      query.category = filters.category;
+    if (category) {
+      query.category = category;
     }
-    if (filters.minPrice !== undefined || filters.maxPrice !== undefined) {
+    if (minPrice !== undefined || maxPrice !== undefined) {
       query.price = {
-        ...(filters.minPrice !== undefined && { $gte: filters.minPrice }),
-        ...(filters.maxPrice !== undefined && { $lte: filters.maxPrice }),
+        ...(minPrice !== undefined && { $gte: minPrice }),
+        ...(maxPrice !== undefined && { $lte: maxPrice }),
       };
     }
 
     try {
       const products = await this.productRepository.findMany(query, {
-        skip: ((pagination.page ?? 1) - 1) * (pagination.limit ?? 5),
-        limit: pagination.limit ?? 5,
+        skip: ((page ?? 1) - 1) * (limit ?? 5),
+        limit: limit ?? 5,
       });
 
       this.logger.log(`Found ${products.length} products`);
@@ -41,10 +43,16 @@ export class ProductService {
   }
 
   async delete(id: string) {
-    return this.productRepository.findOneAndUpdate(
-      { _id: id },
-      { isDeleted: true },
-      {},
-    );
+    try {
+      const result = await this.productRepository.findOneAndUpdate(
+        { _id: id },
+        { isDeleted: true },
+        {},
+      );
+      return result;
+    } catch (error) {
+      this.logger.error(`Error deleting product with id ${id}`, error);
+      throw new Error('Failed to delete product');
+    }
   }
 }
