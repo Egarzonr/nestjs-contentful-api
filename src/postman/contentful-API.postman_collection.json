@@ -1,0 +1,344 @@
+{
+	"info": {
+		"_postman_id": "a4f3bb09-df63-499a-9227-ece455f16c04",
+		"name": "Contentful-API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "18514549"
+	},
+	"item": [
+		{
+			"name": "products",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/products?page=1&limit=5",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"products"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "1"
+						},
+						{
+							"key": "limit",
+							"value": "5"
+						},
+						{
+							"key": "price",
+							"value": null,
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "products filters",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/products?name=iPhone&category=Smartphone&minPrice=1000&maxPrice=1900",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"products"
+					],
+					"query": [
+						{
+							"key": "name",
+							"value": "iPhone"
+						},
+						{
+							"key": "category",
+							"value": "Smartphone"
+						},
+						{
+							"key": "minPrice",
+							"value": "1000"
+						},
+						{
+							"key": "maxPrice",
+							"value": "1900"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/products/67cf6110823b7ed6686dbf78",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"products",
+						"67cf6110823b7ed6686dbf78"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "auth/login",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"username\": \"testUser\",\r\n  \"password\": \"SecretPass123\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/auth/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "users/register",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"username\": \"testUser\",\r\n  \"password\": \"SecretPass123\",\r\n  \"roles\": [\"admin\"]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/users/register",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"users",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "contentful/fetch-products",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/contentful/fetch-products",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"contentful",
+						"fetch-products"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "reports/deleted-percentage",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlNhbXUxMTIiLCJzdWIiOiI2N2NmNjViMzU3NzU4YWYyYzg0NGFiZjIiLCJpYXQiOjE3NDE2NDUyNDAsImV4cCI6MTc0MTY0ODg0MH0.1b0hEae-3pgR5C6mK3zXhGpLvDWAKGHO7Iq5zEclCWs",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImVybmVzdG8gcGVyZXoiLCJ1c2VySWQiOiI2N2NiNjliMTQ0Y2RjOGEzN2JlNGZkZTciLCJpYXQiOjE3NDEzODY0NjksImV4cCI6MTc0MTM5MDA2OX0.4j5vdw_3GKBrfLvcZPdLjTJPqnl1y8ud1zDZfjqhdTY",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/reports/deleted-percentage",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"reports",
+						"deleted-percentage"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "reports/top-expensive-products",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlNhbXUxMTIiLCJzdWIiOiI2N2NmNjViMzU3NzU4YWYyYzg0NGFiZjIiLCJpYXQiOjE3NDE2NDUyNDAsImV4cCI6MTc0MTY0ODg0MH0.1b0hEae-3pgR5C6mK3zXhGpLvDWAKGHO7Iq5zEclCWs",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImVybmVzdG8gcGVyZXoiLCJ1c2VySWQiOiI2N2NiNjliMTQ0Y2RjOGEzN2JlNGZkZTciLCJpYXQiOjE3NDEzODY0NjksImV4cCI6MTc0MTM5MDA2OX0.4j5vdw_3GKBrfLvcZPdLjTJPqnl1y8ud1zDZfjqhdTY",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/reports/top-expensive-products",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"reports",
+						"top-expensive-products"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "reports/non-deleted-percentage",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlNhbXUxMTIiLCJzdWIiOiI2N2NmNjViMzU3NzU4YWYyYzg0NGFiZjIiLCJpYXQiOjE3NDE2NTg3NjIsImV4cCI6MTc0MTY2MjM2Mn0.yvn0mSzpg33tIe5tZPFoccdSY_nybhdC2NMilfmWMWQ",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/reports/non-deleted-percentage?hasPrice=true",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"reports",
+						"non-deleted-percentage"
+					],
+					"query": [
+						{
+							"key": "hasPrice",
+							"value": "true"
+						},
+						{
+							"key": "startDate",
+							"value": "2025-03-07",
+							"disabled": true
+						},
+						{
+							"key": "endDate",
+							"value": "2025-03-11",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
