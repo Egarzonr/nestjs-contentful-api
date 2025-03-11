@@ -3,6 +3,7 @@ import { UsersService } from './user.service';
 import { UsersRepository } from '../repositories/user.repository';
 import { User } from '../schemas/user.schema';
 import { RegisterUserDto } from '../dto/register-user.dto';
+import { BadRequestException, ConflictException } from '@nestjs/common';
 
 describe('UsersService', () => {
   let usersService: UsersService;
@@ -37,33 +38,58 @@ describe('UsersService', () => {
       const registerUserDto: RegisterUserDto = {
         username: 'testuser',
         password: 'password123',
+        roles: ['admin'],
       };
       const createdUser: User = {
         username: 'testuser',
         password: 'hashedPassword',
-      } as User;
+        roles: ['admin'],
+      } as unknown as User;
 
+      mockUsersRepository.findByUsername.mockResolvedValue(null);
       mockUsersRepository.create.mockResolvedValue(createdUser);
 
       const result = await usersService.createUser(registerUserDto);
 
       // eslint-disable-next-line @typescript-eslint/unbound-method
+      expect(usersRepository.findByUsername).toHaveBeenCalledWith(
+        registerUserDto.username,
+      );
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(usersRepository.create).toHaveBeenCalledWith(registerUserDto);
       expect(result).toEqual(createdUser);
     });
 
-    it('should throw an error if user creation fails', async () => {
+    it('should throw ConflictException if username already exists', async () => {
+      const registerUserDto: RegisterUserDto = {
+        username: 'testuser',
+        password: 'password123',
+      };
+      const existingUser: User = {
+        username: 'testuser',
+        password: 'hashedPassword',
+      } as User;
+
+      mockUsersRepository.findByUsername.mockResolvedValue(existingUser);
+
+      await expect(usersService.createUser(registerUserDto)).rejects.toThrow(
+        ConflictException,
+      );
+    });
+
+    it('should throw BadRequestException if user creation fails', async () => {
       const registerUserDto: RegisterUserDto = {
         username: 'testuser',
         password: 'password123',
       };
 
+      mockUsersRepository.findByUsername.mockResolvedValue(null);
       mockUsersRepository.create.mockRejectedValue(
-        new Error('Failed to create user'),
+        new BadRequestException('Failed to create user'),
       );
 
       await expect(usersService.createUser(registerUserDto)).rejects.toThrow(
-        'Failed to create user',
+        BadRequestException,
       );
     });
   });
@@ -120,7 +146,7 @@ describe('UsersService', () => {
       expect(result).toBeNull();
     });
 
-    it('should throw an error if validation fails', async () => {
+    it('should throw BadRequestException if validation fails', async () => {
       const username = 'testuser';
       const password = 'password123';
 
@@ -130,7 +156,7 @@ describe('UsersService', () => {
 
       await expect(
         usersService.validateUser(username, password),
-      ).rejects.toThrow('Failed to validate user');
+      ).rejects.toThrow(BadRequestException);
     });
   });
 });

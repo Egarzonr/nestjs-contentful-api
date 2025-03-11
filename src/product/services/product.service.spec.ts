@@ -3,6 +3,7 @@ import { ProductService } from './product.service';
 import { IProductRepository } from '../repositories/product.repository';
 import { ProductFilterDto } from '../dto/product-filter.dto';
 import { PaginationDto } from '../dto/pagination.dto';
+import { NotFoundException } from '@nestjs/common';
 
 describe('ProductService', () => {
   let productService: ProductService;
@@ -118,6 +119,19 @@ describe('ProductService', () => {
         limit: 5,
       });
     });
+
+    it('should throw an error if findMany fails', async () => {
+      const filters: ProductFilterDto = {};
+      const pagination: PaginationDto = {};
+
+      (productRepository.findMany as jest.Mock).mockRejectedValue(
+        new Error('Failed to fetch products'),
+      );
+
+      await expect(productService.findAll(filters, pagination)).rejects.toThrow(
+        'Failed to fetch products',
+      );
+    });
   });
 
   describe('delete', () => {
@@ -138,6 +152,28 @@ describe('ProductService', () => {
         {},
       );
       expect(result).toEqual({ _id: productId, isDeleted: true });
+    });
+
+    it('should throw NotFoundException if product is not found', async () => {
+      const productId = '123';
+
+      (productRepository.findOneAndUpdate as jest.Mock).mockResolvedValue(null);
+
+      await expect(productService.delete(productId)).rejects.toThrow(
+        NotFoundException,
+      );
+    });
+
+    it('should throw an error if findOneAndUpdate fails', async () => {
+      const productId = '123';
+
+      (productRepository.findOneAndUpdate as jest.Mock).mockRejectedValue(
+        new Error('Failed to delete product'),
+      );
+
+      await expect(productService.delete(productId)).rejects.toThrow(
+        'Failed to delete product',
+      );
     });
   });
 });

@@ -38,7 +38,7 @@ export class UsersService {
       return null;
     } catch (error) {
       this.logger.error(`Error validating user ${username}`, error);
-      throw new Error('Failed to validate user');
+      throw new BadRequestException('Failed to validate user');
     }
   }
 }
