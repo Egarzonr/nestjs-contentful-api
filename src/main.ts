@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { Logger, LogLevel } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -13,7 +14,10 @@ async function bootstrap() {
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/docs', app, document);
+  const logLevels: LogLevel[] = ['log', 'error', 'warn', 'debug', 'verbose'];
+  app.useLogger(logLevels);
 
   await app.listen(3000);
+  Logger.log('Application is running on http://localhost:3000', 'Bootstrap');
 }
 bootstrap();
