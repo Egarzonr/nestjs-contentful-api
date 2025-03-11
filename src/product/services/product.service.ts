@@ -13,31 +13,29 @@ export class ProductService {
 
   async findAll(filters: ProductFilterDto, pagination: PaginationDto) {
     const { name, category, minPrice, maxPrice } = filters;
-    const { page, limit } = pagination;
+    const { page = 1, limit = 5 } = pagination;
+
     const query: Record<string, any> = { isDeleted: false };
-    if (name) {
-      query.name = { $regex: name, $options: 'i' };
-    }
-    if (category) {
-      query.category = category;
-    }
+
+    if (name) query.name = { $regex: name, $options: 'i' };
+    if (category) query.category = category;
     if (minPrice !== undefined || maxPrice !== undefined) {
       query.price = {
-        ...(minPrice !== undefined && { $gte: minPrice }),
-        ...(maxPrice !== undefined && { $lte: maxPrice }),
+        ...(minPrice && { $gte: minPrice }),
+        ...(maxPrice && { $lte: maxPrice }),
       };
     }
 
     try {
       const products = await this.productRepository.findMany(query, {
-        skip: ((page ?? 1) - 1) * (limit ?? 5),
-        limit: limit ?? 5,
+        skip: (page - 1) * limit,
+        limit,
       });
 
       this.logger.log(`Found ${products.length} products`);
       return products;
     } catch (error) {
-      this.logger.error('Error fetching products', error);
+      this.logger.error(`Error fetching products: ${error}`);
       throw new Error('Failed to fetch products');
     }
   }
