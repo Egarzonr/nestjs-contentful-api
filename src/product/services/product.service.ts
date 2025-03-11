@@ -1,7 +1,8 @@
-import { Injectable, Inject, Logger } from '@nestjs/common';
+import { Injectable, Inject, Logger, NotFoundException } from '@nestjs/common';
 import { IProductRepository } from '../repositories/product.repository';
 import { PaginationDto } from '../dto/pagination.dto';
 import { ProductFilterDto } from '../dto/product-filter.dto';
+import { Product } from '../schemas/product.schema';
 
 @Injectable()
 export class ProductService {
@@ -40,15 +41,21 @@ export class ProductService {
     }
   }
 
-  async delete(id: string) {
+  async delete(id: string): Promise<Product | null> {
     try {
       const result = await this.productRepository.findOneAndUpdate(
         { _id: id },
         { isDeleted: true },
         {},
       );
+      if (!result) {
+        throw new NotFoundException(`Product with id ${id} not found`);
+      }
       return result;
     } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
       this.logger.error(`Error deleting product with id ${id}`, error);
       throw new Error('Failed to delete product');
     }
